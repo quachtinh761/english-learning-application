@@ -1,0 +1,59 @@
+Components
+
+Components:
+- DNS: first step to filter requests, prevent spaming, xss, DDoS... Consider vendors: AWS Route53 + AWS WAF + AWS Shield; CloudFlare
+- CDN: to cache statics content or to host a static web or SPA. AWS Cloudfront or CloudFlare Pages
+- Load Balancing: to distribute network traffic to improve application scalabilityz AWS ALB
+- API gateway: to authenticate, authorization requests.
+- Services: where requests are mainly handled
+- Cache: to cache-retrieve data faster
+- Queue: queue handlers for services, internal communication mean.
+- Database: where store the data
+- Notification/socket: external communication with outside (realtime)
+- Log service: external service to monitor the logs from server
+
+
+Typical request lifecycle:
+Request from end users (call directly by API (mobile) or call API from browser) will be sent to DNS by domain, where the check for security happens.
+If the request is safe, then goes to the ALB. At here, based on the concurrent user amount, the request is sent to corresponding API gateway instance.
+API Gateway will authenticate and authorize the request, then proxy to the services.
+If a retrieval request, services will prioritize to retrieve from the Cache, if does not exist, calls to the database (and then cache to Cache layer for next request)
+If a post/put/delete, just store to the database directly and update the cache (if needed).
+If service needs another data source from another service, it will call to internal service and retrieve data.
+After a post/put/delete request, if need to send notification to other services, we use Queue; or use Notification service if need to notify end-users
+
+Example:
+
+1. Request get quiz by id:
+    - Call to API gateway, if this request is valid, we send to Quiz service
+    - Quiz service will check if it cached the data before, return the cached, otherwise, call to the database to get data
+    - Return data
+
+2. User submits quiz
+    - Call to API gateway, if this request is valid, we send to Quiz service
+    - Quiz service will check the data
+        + if is invalid, return error
+        + Else:
+            * Calculate & insert database
+            * Call to the cache to get the quiz's statistics, if does not exist, get it from the database
+            * Update the statics with the newest response
+            * Store the newest statistics
+            * Respond to the request
+            * (Silently) Send notification to other service (via Queue), and notify the change to other users (realtime - notification)
+            * From Users side, when receive the notification about the statistics, then update the leaderboard
+
+* Technologies:
+- DNS: CloudFlare
+- CDN: CloudFlare
+==> Saving cost
+- Load Balancing: Either AWS ALB or CloudFlare
+- API gateway: self-implement to customize better.
+- API Gateway & Services: hosted on EC2 (Or ECS & EKS long-term) - NodeJs, Go, or PHP
+- Database: AWS RDS - PostgreSQL
+- Queue: AWS SQS
+- Cache: AWS Elastic Cache - Redis
+- Notification: Firebase FCM - Or SNS
+* Tools:
+- Sentry - Monitor log
+- AWS CloudWatch - monitor services, rds
+
