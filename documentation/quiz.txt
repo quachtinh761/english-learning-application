@@ -1,0 +1,47 @@
+
+Assumption:
+- Quiz will have n questions, each question has different point
+- Quiz can be opened for anonymous or require logging in (based on setting)
+- Quiz can be start at a specific time or anytime
+- The order of questions for each user might be randomized
+- Each quiz has limit time to complete
+- A question can be single choice or multiple choice question
+- Quiz will have specific end time. At this time, the leader board will be finalized.
+
+
+
+Quizzes:
+- Title
+- Description
+- Instruction
+- Start time
+- End time
+- Number of question
+- Maximum Point
+- Do allow anonymous?
+- Do randomize questions?
+- Number of participants
+- Lowest point
+- Highest point
+
+
+Questions
+- Quiz id
+- Point
+- Question
+- Type: Singe choice, multiple choice // later on: text....
+- Options
+- Answer
+-
+
+
+Quiz Submissions
+- Quiz id
+- User id
+- User name
+- User email
+- Number of correction
+- Total Points
+- Detail // store questions and user's answers
+- Created at
+- Rank // Will be update at the end of quiz
