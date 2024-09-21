@@ -20,4 +20,5 @@ Route::prefix('v1')->group(function () {
     Route::get('quizzes/code/{code}', '\App\Http\Controllers\QuizController@getByCode');
     Route::post('quizzes/{code}/start', '\App\Http\Controllers\QuizController@startQuiz');
     Route::post('quizzes/{code}/submit', '\App\Http\Controllers\QuizController@submitQuiz');
+    Route::get('quizzes/{code}/top', '\App\Http\Controllers\QuizController@getTopRank');
 });
