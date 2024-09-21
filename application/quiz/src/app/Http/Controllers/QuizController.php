@@ -7,6 +7,7 @@ use App\Http\Requests\Quiz\PostSubmitQuizRequest;
 use App\Http\Responses\PaginationResponse;
 use App\Http\Responses\SuccessResponse;
 use App\Http\Services\Interfaces\QuizServiceInterface;
+use App\Http\Transformers\QuizSubmissionTransformer;
 use App\Http\Transformers\QuizTransformer;
 use Illuminate\Http\JsonResponse;
 
@@ -68,9 +69,21 @@ class QuizController extends Controller
 
         $result = $quizService->submitQuiz(
             quiz: $quiz,
-            submittedData: $request->validated()
+            submissionCode: $request->validated()['submission_code'],
+            answers: $request->validated()['answers']
         );
 
         return response()->json($result);
+    }
+
+    public function getTopRank(
+        string $code,
+        QuizServiceInterface $quizService
+    ): JsonResponse
+    {
+        $quiz = $quizService->getByCode($code);
+        $result = $quizService->getTopSubmissions(quiz: $quiz, limit: 100);
+
+        return SuccessResponse::create(data: QuizSubmissionTransformer::transformItems($result));
     }
 }

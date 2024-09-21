@@ -35,8 +35,19 @@ interface QuizServiceInterface
      * Submit a quiz and return the result
      *
      * @param Quiz $quiz
-     * @param array $submittedData ['submission_code' => '123456', 'answers' => [['question_id' => 1, 'option_id' => 1], ['question_id' => 2, 'option_id' => 2]]
+     * @param string $submissionCode
+     * @param array $answers
      * @return array
      */
-    public function submitQuiz(Quiz $quiz, array $submittedData): array;
+    public function submitQuiz(Quiz $quiz, string $submissionCode, array $answers): array;
+
+    /**
+     * Get top xx quiz submissions
+     *
+     * @param Quiz $quiz
+     * @param int $limit
+     *
+     * @return array
+     */
+    public function getTopSubmissions(Quiz $quiz, int $limit): array;
 }

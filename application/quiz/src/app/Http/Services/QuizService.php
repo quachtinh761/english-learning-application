@@ -30,7 +30,7 @@ class QuizService implements QuizServiceInterface
      */
     public function getDetail(int $id, array|string $select = ['*']): Quiz
     {
-        return $this->quizRepository->newQuery()->with(['questions'])->find($id, $select);
+        return $this->quizRepository->newQuery()->with(['quizQuestions'])->find($id, $select);
     }
 
     /**
@@ -38,7 +38,7 @@ class QuizService implements QuizServiceInterface
      */
     public function getByCode(string $code, array|string $select = ['*']): Quiz
     {
-        return $this->quizRepository->newQuery()->with(['questions'])->where('code', $code)->first($select);
+        return $this->quizRepository->newQuery()->with(['quizQuestions'])->where('code', $code)->first($select);
     }
 
     /**
@@ -46,12 +46,7 @@ class QuizService implements QuizServiceInterface
      */
     public function startQuiz(Quiz $quiz): array
     {
-        $questions = $quiz->quizQuestions()->map(function ($question) {
-            return [
-                'question' => $question->question,
-                'options' => $question->options->pluck('option')->all(),
-            ];
-        })->all();
+        $questions = $quiz->quizQuestions()->all();
 
         shuffle($questions);
 
@@ -59,11 +54,35 @@ class QuizService implements QuizServiceInterface
             'quiz_id' => $quiz->id,
             'submission_code' => $submissionCode = uniqid(),
             'started_at' => now(),
+            'detail' => array_map(fn ($question) => array_merge($question, [
+                'user_answer' => null,
+                'is_correct' => null,
+            ]), $questions),
         ]);
 
         return [
             'submission_code' => $submissionCode,
-            'questions' => $questions,
+            'questions' => array_map(fn ($question) => [
+                'question_id' => $question->id,
+                'question' => $question->question,
+                'options' => $question->options->pluck('option')->all(),
+            ], $questions),
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function submitQuiz(Quiz $quiz, string $submissionCode, array $answers): array
+    {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTopSubmissions(Quiz $quiz, int $limit): array
+    {
+        return $quiz->quizSubmissions()->orderByDesc('total_points')->limit($limit)->get()->toArray();
     }
 }

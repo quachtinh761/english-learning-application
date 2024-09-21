@@ -14,11 +14,10 @@ class PostSubmitQuizRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'string',
-            'category_id' => 'integer',
-            'keyword' => 'string',
-            'page' => 'integer',
-            'per_page' => 'integer',
+            'submission_code' => ['required', 'string'],
+            'answers' => ['required', 'array'],
+            'answers.*.question_id' => ['required', 'integer'],
+            'answers.*.answer' => ['required', 'string'],
         ];
     }
 }
