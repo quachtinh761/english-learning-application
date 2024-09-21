@@ -3,27 +3,41 @@ Assumption:
 - Quiz will have n questions, each question has different point
 - Quiz can be opened for anonymous or require logging in (based on setting)
 - Quiz can be start at a specific time or anytime
+- Each quiz has a timeframe to finish
 - The order of questions for each user might be randomized
 - Each quiz has limit time to complete
 - A question can be single choice or multiple choice question
 - Quiz will have specific end time. At this time, the leader board will be finalized.
+- Users have same score will be in the same rank
 
+QuizCategories:
+- Name
+- Slug
+- Parent ID
+- Description
+........//Other attribute, I do not mentioned more about this in this phase
 
 
 Quizzes:
+- Unique Code
+- Category ID
 - Title
 - Description
 - Instruction
 - Start time
 - End time
-- Number of question
+- Number of questions
 - Maximum Point
 - Do allow anonymous?
 - Do randomize questions?
 - Number of participants
 - Lowest point
 - Highest point
+- status
 
+QuizTags
+- Quiz ID
+- Tag
 
 Questions
 - Quiz id
@@ -32,7 +46,6 @@ Questions
 - Type: Singe choice, multiple choice // later on: text....
 - Options
 - Answer
--
 
 
 Quiz Submissions
@@ -45,3 +58,17 @@ Quiz Submissions
 - Detail // store questions and user's answers
 - Created at
 - Rank // Will be update at the end of quiz
+
+Demo scenario:
+- Users can see the list of Quizzes
+- Click into the quiz detail: leader board & button to join
+- Quiz can be join anonymously
+- User will read the quiz, description & guideline
+- User can start the quiz, after finish, the will input name, email, and see the result.
+- The leader board will show the list of users & score
+
+Open question:
+- What happens if user input same email after finishing challenge
+- How to let users know the answer after that?
+- How to design: a quiz belongs to multiple categories
+- Each quiz has level?

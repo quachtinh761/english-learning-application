@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" version="24.7.14">
   <diagram name="Page-1" id="okymtJPq7D7ICpJTX9z9">
-    <mxGraphModel dx="2375" dy="1347" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="1741" dy="988" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -256,7 +256,7 @@
         <mxCell id="PFlNqqRjb3YIv1wO_MGC-95" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="PFlNqqRjb3YIv1wO_MGC-64" target="PFlNqqRjb3YIv1wO_MGC-94">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="PFlNqqRjb3YIv1wO_MGC-98" value="Queue System" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.communications.queue_viewer;" vertex="1" parent="1">
+        <mxCell id="PFlNqqRjb3YIv1wO_MGC-98" value="Message Broker System" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.communications.queue_viewer;" vertex="1" parent="1">
           <mxGeometry x="1160" y="620" width="104.5" height="100" as="geometry" />
         </mxCell>
         <mxCell id="PFlNqqRjb3YIv1wO_MGC-101" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;curved=0;startArrow=classic;startFill=1;strokeWidth=2;fillColor=#e1d5e7;strokeColor=#9673a6;dashed=1;dashPattern=1 1;" edge="1" parent="1" source="PFlNqqRjb3YIv1wO_MGC-98" target="PFlNqqRjb3YIv1wO_MGC-47">
