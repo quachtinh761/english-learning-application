@@ -62,7 +62,7 @@ class QuizService implements QuizServiceInterface
      */
     public function startQuiz(Quiz $quiz): array
     {
-        $questions = $quiz->quizQuestions->select()->all();
+        $questions = $quiz->quizQuestions->all();
 
         shuffle($questions);
 
@@ -71,10 +71,15 @@ class QuizService implements QuizServiceInterface
                 'quiz_id' => $quiz->id,
                 'submission_code' => $submissionCode = Str::upper(uniqid()),
                 'started_at' => now(),
-                'detail' => array_map(fn ($question) => array_merge($question->toArray(), [
+                'detail' => array_map(fn ($question) => [
+                    'id' => $question->id,
+                    'question' => $question->question,
+                    'options' => $question->options,
+                    'answer' => $question->answer,
+                    'point' => $question->point,
                     'user_answer' => null,
                     'is_correct' => null,
-                ]), $questions),
+                ], $questions),
             ]);
         } catch (\Exception $e) {
             throw new InternalServerErrorException('Failed to start quiz');

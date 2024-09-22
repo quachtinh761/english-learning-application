@@ -25,7 +25,7 @@ class QuizTransformer extends BaseTransformer
             'duration_in_minutes' => $quiz->duration_in_minutes,
             'maximum_point' => $quiz->maximum_point,
             'is_anonymous' => $quiz->is_anonymous,
-            'questions' => $quiz->relationLoaded('quizQuestions') ? QuizQuestionTransformer::transformItems($quiz->quizQuestions->all()) : [],
+            // 'questions' => $quiz->relationLoaded('quizQuestions') ? QuizQuestionTransformer::transformItems($quiz->quizQuestions->all()) : [],
         ];
     }
 }
