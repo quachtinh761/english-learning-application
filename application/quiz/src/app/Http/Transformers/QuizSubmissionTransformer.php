@@ -21,7 +21,8 @@ class QuizSubmissionTransformer extends BaseTransformer
             'user_email' => $quizSubmission->user_email,
             'number_of_corrections' => $quizSubmission->number_of_corrections,
             'total_points' => $quizSubmission->total_points,
-            'detail' => $quizSubmission->detail,
+            // TODO: consider if we should send the detail or not
+            // 'detail' => $quizSubmission->detail,
             'rank' => $quizSubmission->rank,
         ];
     }

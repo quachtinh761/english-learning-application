@@ -2,11 +2,13 @@
 
 namespace App\Exceptions;
 
+use App\Exceptions\ModelNotFoundException;
 use App\Http\Responses\InternalServerErrorResponse;
 use App\Http\Responses\InvalidInputResponse;
 use App\Http\Responses\NotFoundErrorResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Mockery\Matcher\Not;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -49,6 +51,18 @@ class Handler extends ExceptionHandler
 
         if ($e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
             return NotFoundErrorResponse::create($e->getMessage());
+        }
+
+        if ($e instanceof ModelNotFoundException) {
+            return NotFoundErrorResponse::create($e->getMessage());
+        }
+
+        if ($e instanceof InternalServerErrorException) {
+            return InternalServerErrorResponse::create($e->getMessage());
+        }
+
+        if ($e instanceof MethodNotAllowedHttpException) {
+            return NotFoundErrorResponse::create();
         }
 
         return InternalServerErrorResponse::create($e->getMessage());
