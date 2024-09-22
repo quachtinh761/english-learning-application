@@ -2,6 +2,8 @@
 
 namespace App\Http\Services;
 
+use App\Enums\CacheKeysEnum;
+use App\Events\QuizSubmittedEvent;
 use App\Exceptions\InternalServerErrorException;
 use App\Exceptions\ModelNotFoundException;
 use App\Http\Repositories\QuizRepository;
@@ -11,6 +13,7 @@ use App\Models\Quiz;
 use App\Models\QuizSubmission;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -27,7 +30,8 @@ class QuizService implements QuizServiceInterface
      */
     public function getList(array $filter, array $sort, int $page, int $perPage, array|string $select = ['*']): Paginator|LengthAwarePaginator
     {
-        return $this->quizRepository->getList($filter, $sort, $page, $perPage, $select);
+        $key = md5(json_encode([$filter, $sort, $page, $perPage, $select]));
+        return Cache::remember($key, 5 * 60, fn () => $this->quizRepository->getList($filter, $sort, $page, $perPage, $select));
     }
 
     /**
@@ -116,6 +120,8 @@ class QuizService implements QuizServiceInterface
                 'user_email' => $userSubmission['user_email'] ?? '',
                 'user_name' => $userSubmission['user_name'] ?? '',
             ]);
+
+            QuizSubmittedEvent::dispatch($quiz->id, $submission->id);
         } catch (\Exception $e) {
             Log::error('Failed to submit quiz', [
                 'quiz' => $quiz->id,
@@ -189,8 +195,26 @@ class QuizService implements QuizServiceInterface
     /**
      * @inheritDoc
      */
-    public function getTopSubmissions(Quiz $quiz, int $limit): array
+    public function getTopSubmissions(Quiz $quiz, int $limit = 100): array
     {
-        return $quiz->quizSubmissions()->orderByDesc('total_points')->limit($limit)->get()->all();
+        return Cache::remember(
+            sprintf(CacheKeysEnum::TopQuizSubmission->value, $quiz->id, $limit),
+            5 * 60,
+            fn () => $this->getTopSubmissionsFromDb($quiz, $limit)
+        );
+    }
+
+    /**
+     * To get top submissions from database
+     * @param Quiz $quiz
+     * @param int $limit
+     * @return array
+     */
+    public function getTopSubmissionsFromDb(Quiz $quiz, int $limit): array
+    {
+        return $quiz->quizSubmissions()
+            ->whereNotNull('submitted_at')->orderByDesc('total_points')->limit($limit)->get([
+                'id', 'user_name', 'user_email', 'total_points', 'number_of_corrections', 'submitted_at'
+            ])->all();
     }
 }

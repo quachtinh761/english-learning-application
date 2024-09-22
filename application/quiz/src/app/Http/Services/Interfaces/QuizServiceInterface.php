@@ -53,4 +53,12 @@ interface QuizServiceInterface
      * @return array
      */
     public function getTopSubmissions(Quiz $quiz, int $limit): array;
+
+    /**
+     * To get top submissions from database
+     * @param Quiz $quiz
+     * @param int $limit
+     * @return array
+     */
+    public function getTopSubmissionsFromDb(Quiz $quiz, int $limit): array;
 }

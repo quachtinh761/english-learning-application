@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     Route::get('quizzes', '\App\Http\Controllers\QuizController@getList');
-    Route::get('quizzes/{id}', '\App\Http\Controllers\QuizController@getDetail');
+    Route::get('quizzes/{id}', '\App\Http\Controllers\QuizController@getDetail')->where('id', '[1-9][0-9]*');
     Route::get('quizzes/code/{code}', '\App\Http\Controllers\QuizController@getByCode');
     Route::post('quizzes/{code}/start', '\App\Http\Controllers\QuizController@startQuiz');
     Route::post('quizzes/{code}/submit', '\App\Http\Controllers\QuizController@submitQuiz');
