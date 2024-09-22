@@ -1,0 +1,321 @@
+openapi: 3.0.3
+info:
+  title: Client API for Quiz Server
+  version: 1.0.
+servers:
+  - url: https://host-name/api/v1
+paths:
+  /quizzes:
+    get:
+      tags:
+        - Quizzes
+      summary: Get list Quizzes
+      description: Get list Quizzes
+      responses:
+        200:
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Quiz'
+                  meta:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                        example: 160
+                      page:
+                        type: integer
+                        example: 1
+                      per_page:
+                        type: integer
+                        example: 10
+        400:
+          description: Invalid input
+          $ref: '#/components/responses/400_InvalidInput'
+  /quizzes/{id}:
+    get:
+      tags:
+        - Quizzes
+      summary: Get Quiz by Id
+      description: Get Quiz by id
+      parameters:
+        - name: id
+          in: path
+          description: quiz's id
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        400:
+          description: Invalid input
+          $ref: '#/components/responses/400_InvalidInput'
+  /quizzes/code/{code}:
+    get:
+      tags:
+        - Quizzes
+      summary: Get Quiz by code
+      description: Get Quiz by code
+      parameters:
+        - name: code
+          in: path
+          description: quiz's unique code
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/Quiz'
+        404:
+          description: Code does not exist
+          $ref: '#/components/responses/404_ModelNotFound'
+  /quizzes/{code}/top:
+    get:
+      tags:
+        - Quizzes
+      summary: Get top rank Quiz by code
+      description: Get top rank Quiz by code
+      parameters:
+        - name: code
+          in: path
+          description: quiz's unique code
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quiz'
+        404:
+          description: Code does not exist
+          $ref: '#/components/responses/404_ModelNotFound'
+        500:
+          description: Internal server error
+          $ref: '#/components/responses/500_InternalServerError'
+  /quizzes/{code}/start:
+    post:
+      tags:
+        - Quizzes
+      summary: Start the Quiz by code
+      parameters:
+        - name: code
+          in: path
+          description: code the Quiz
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      submission_code:
+                        type: string
+                        example: "66EFA65C9AAE0"
+                      questions:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            question_id:
+                              type: integer
+                              example: 3
+                            question:
+                              type: string
+                              example: "Officiis et laboriosam ea consequatur a quam voluptatum aspernatur."
+                            options:
+                              type: object
+                              properties:
+                                A:
+                                  type: string
+                                  example: "Iste architecto est quia molestias delectus alias."
+                                B:
+                                  type: string
+                                  example: "Voluptatum aut nisi sint vitae odit."
+                                C:
+                                  type: string
+                                  example: "Aliquam aut sit officia commodi dolore cupiditate et."
+                                D:
+                                  type: string
+                                  example: "Nihil tempora voluptatem minus."
+                      duration_in_minutes:
+                        type: integer
+                        example: 0
+        400:
+          description: Invalid input
+          $ref: '#/components/responses/400_InvalidInput'
+        404:
+          description: Code does not exist
+          $ref: '#/components/responses/404_ModelNotFound'
+        500:
+          description: Internal server error
+          $ref: '#/components/responses/500_InternalServerError'
+  /quizzes/{code}/submit:
+    post:
+      tags:
+        - Quizzes
+      summary: Submit the Quiz by code
+      description: ''
+      parameters:
+        - name: code
+          in: path
+          description: quiz's unique code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_email:
+                  type: string
+                  example: "user1@gmail.com"
+                user_name:
+                  type: string
+                  example: "user name"
+                submission_code:
+                  type: string
+                  example: "66EF98C8D6280"
+                answers:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      question_id:
+                        type: integer
+                        example: 3
+                      answer:
+                        type: string
+                        example: "A"
+      responses:
+        200:
+          description: successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      number_of_corrections:
+                        type: integer
+                        example: 8
+                      total_points:
+                        type: integer
+                        example: 70
+        400:
+          description: Invalid input
+          $ref: '#/components/responses/400_InvalidInput'
+        404:
+          description: Code does not exist
+          $ref: '#/components/responses/404_ModelNotFound'
+        500:
+          description: Internal server error
+          $ref: '#/components/responses/500_InternalServerError'
+components:
+  schemas:
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        code:
+          type: string
+          example: "ABC-DEF-GHI"
+        title:
+          type: string
+          example: "Vocabulary Quiz"
+        description:
+          type: string
+          example: "This test is to check your vocabulary about animals."
+        instruction:
+          type: string
+          example: "This quiz includes 100 questions, you have 60 minutes to complete the quiz."
+        number_of_questions:
+          type: integer
+          example: 9
+        start_time:
+          type: string
+          nullable: true
+          format: date-time
+          example: "2021-09-01T00:00:00Z"
+        end_time:
+          type: string
+          nullable: true
+          format: date-time
+          example: "2021-09-01T00:00:00Z"
+        duration_in_minutes:
+          type: integer
+          example: 60
+        maximum_point:
+          type: integer
+          example: 100
+        is_anonymous:
+          type: boolean
+          description: Allow user join the quiz without login.
+          example: true
+  responses:
+    400_InvalidInput:
+      description: invalid input error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalid input
+              errors:
+                type: object
+                example: {"user_email":["The user email field must be a valid email address."]}
+    404_ModelNotFound:
+      description: Page not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Model Quiz with term est-qasdasduassd-et-culpa not found
+    500_InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Something went wrong
