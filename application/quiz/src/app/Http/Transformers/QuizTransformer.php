@@ -15,7 +15,7 @@ class QuizTransformer extends BaseTransformer
         return [
             'id' => $quiz->id,
             'code' => $quiz->code,
-            'name' => $quiz->name,
+            'title' => $quiz->title,
             'description' => $quiz->description,
             'instruction' => $quiz->instruction,
             'number_of_questions' => $quiz->number_of_questions,

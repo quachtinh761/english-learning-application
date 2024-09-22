@@ -21,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $bindings = [
             \App\Http\Services\Interfaces\QuizServiceInterface::class => \App\Http\Services\QuizService::class,
+            \App\Http\Services\Interfaces\QuizSubmissionServiceInterface::class => \App\Http\Services\QuizSubmissionService::class,
         ];
 
         foreach ($bindings as $abstract => $concrete) {

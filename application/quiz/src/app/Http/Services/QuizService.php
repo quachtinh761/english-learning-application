@@ -2,12 +2,16 @@
 
 namespace App\Http\Services;
 
+use App\Exceptions\InternalServerErrorException;
+use App\Exceptions\ModelNotFoundException;
 use App\Http\Repositories\QuizRepository;
 use App\Http\Repositories\QuizSubmissionRepository;
 use App\Http\Services\Interfaces\QuizServiceInterface;
 use App\Models\Quiz;
+use App\Models\QuizSubmission;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Str;
 
 class QuizService implements QuizServiceInterface
 {
@@ -30,7 +34,13 @@ class QuizService implements QuizServiceInterface
      */
     public function getDetail(int $id, array|string $select = ['*']): Quiz
     {
-        return $this->quizRepository->newQuery()->with(['quizQuestions'])->find($id, $select);
+        $quiz = $this->quizRepository->newQuery()->with(['quizQuestions'])->find($id, $select);
+
+        if (!$quiz) {
+            throw new ModelNotFoundException('Quiz', $id);
+        }
+
+        return $quiz;
     }
 
     /**
@@ -38,7 +48,13 @@ class QuizService implements QuizServiceInterface
      */
     public function getByCode(string $code, array|string $select = ['*']): Quiz
     {
-        return $this->quizRepository->newQuery()->with(['quizQuestions'])->where('code', $code)->first($select);
+        $quiz = $this->quizRepository->newQuery()->with(['quizQuestions'])->where('code', $code)->first($select);
+
+        if (!$quiz) {
+            throw new ModelNotFoundException('Quiz', $code);
+        }
+
+        return $quiz;
     }
 
     /**
@@ -46,26 +62,30 @@ class QuizService implements QuizServiceInterface
      */
     public function startQuiz(Quiz $quiz): array
     {
-        $questions = $quiz->quizQuestions()->all();
+        $questions = $quiz->quizQuestions->select()->all();
 
         shuffle($questions);
 
-        $this->quizSubmissionRepository->create([
-            'quiz_id' => $quiz->id,
-            'submission_code' => $submissionCode = uniqid(),
-            'started_at' => now(),
-            'detail' => array_map(fn ($question) => array_merge($question, [
-                'user_answer' => null,
-                'is_correct' => null,
-            ]), $questions),
-        ]);
+        try {
+            $this->quizSubmissionRepository->create([
+                'quiz_id' => $quiz->id,
+                'submission_code' => $submissionCode = Str::upper(uniqid()),
+                'started_at' => now(),
+                'detail' => array_map(fn ($question) => array_merge($question->toArray(), [
+                    'user_answer' => null,
+                    'is_correct' => null,
+                ]), $questions),
+            ]);
+        } catch (\Exception $e) {
+            throw new InternalServerErrorException('Failed to start quiz');
+        }
 
         return [
             'submission_code' => $submissionCode,
             'questions' => array_map(fn ($question) => [
                 'question_id' => $question->id,
                 'question' => $question->question,
-                'options' => $question->options->pluck('option')->all(),
+                'options' => $question->options,
             ], $questions),
         ];
     }
@@ -75,7 +95,70 @@ class QuizService implements QuizServiceInterface
      */
     public function submitQuiz(Quiz $quiz, string $submissionCode, array $answers): array
     {
+        $submission = $this->validateSubmission(quiz: $quiz, submissionCode: $submissionCode);
+        $result = $this->mapAnswersAndCalculatePoints($submission->detail, $answers);
+
+        $submission->update([
+            'submitted_at' => now(),
+            'number_of_corrections' => $result['number_of_correct_answers'],
+            'total_points' => $result['total_points'],
+            'detail' => $result['detail'],
+        ]);
+
         return [];
+    }
+
+    /**
+     * To validate submission for a quiz
+     * @param Quiz $quiz
+     * @param string $submissionCode
+     * @return QuizSubmission
+     *
+     * @throws ModelNotFoundException
+     */
+    private function validateSubmission(Quiz $quiz, string $submissionCode): QuizSubmission
+    {
+        $submission = $quiz->quizSubmissions()
+            ->where('submission_code', $submissionCode)
+            ->whereNull('submitted_at')
+            ->first();
+
+        if (!$submission) {
+            throw new ModelNotFoundException('Submission', $submissionCode);
+        }
+
+        return $submission;
+    }
+
+    /**
+     * To map answers and calculate points for a quiz
+     * @param array $questions
+     * @param array $answers
+     * @return array ['detail' => array, 'total_points' => int, 'number_of_correct_answers' => int]
+     */
+    private function mapAnswersAndCalculatePoints(array $questions, array $answers): array
+    {
+        $totalPoints = 0;
+        $numberCorrectAnswers = 0;
+        $answers = array_column($answers, 'answer', 'question_id');
+
+        foreach ($questions as $key => $question) {
+            $questions[$key]['user_answer'] = $answers[$question['id']] ?? '';
+
+            // TODO: temporarily work for single choice question only, need to expand for multiple choice question
+            $questions[$key]['is_correct'] = $questions[$key]['user_answer'] === $question['answer'];
+
+            if ($questions[$key]['is_correct']) {
+                $totalPoints += $question['point'];
+                $numberCorrectAnswers++;
+            }
+        }
+
+        return [
+            'detail' => $questions,
+            'total_points' => $totalPoints,
+            'number_of_correct_answers' => $numberCorrectAnswers,
+        ];
     }
 
     /**
@@ -83,6 +166,6 @@ class QuizService implements QuizServiceInterface
      */
     public function getTopSubmissions(Quiz $quiz, int $limit): array
     {
-        return $quiz->quizSubmissions()->orderByDesc('total_points')->limit($limit)->get()->toArray();
+        return $quiz->quizSubmissions()->orderByDesc('total_points')->limit($limit)->get()->all();
     }
 }

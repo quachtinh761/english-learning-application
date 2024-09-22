@@ -4,6 +4,7 @@ namespace App\Http\Services\Interfaces;
 
 use App\Exceptions\ModelNotFoundException;
 use App\Models\Quiz;
+use App\Models\QuizSubmission;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 
@@ -38,6 +39,8 @@ interface QuizServiceInterface
      * @param string $submissionCode
      * @param array $answers
      * @return array
+     *
+     * @throws InternalServerErrorException
      */
     public function submitQuiz(Quiz $quiz, string $submissionCode, array $answers): array;
 

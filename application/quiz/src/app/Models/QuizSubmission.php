@@ -19,6 +19,8 @@ class QuizSubmission extends Model
         'total_points',
         'detail',
         'rank',
+        'started_at',
+        'submitted_at',
     ];
 
     protected $casts = [
