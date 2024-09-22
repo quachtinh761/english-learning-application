@@ -94,6 +94,7 @@ class QuizService implements QuizServiceInterface
                 'question' => $question->question,
                 'options' => $question->options,
             ], $questions),
+            'duration_in_minutes' => $quiz->duration_in_minutes,
         ];
     }
 
