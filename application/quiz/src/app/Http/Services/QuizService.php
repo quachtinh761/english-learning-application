@@ -127,7 +127,7 @@ class QuizService implements QuizServiceInterface
                 'quiz' => $quiz->id,
                 'submissionCode' => $submissionCode,
                 'userSubmission' => $userSubmission,
-                'exception' => $e->getTrace()
+                'exception' => $e
             ]);
             throw new InternalServerErrorException('Failed to submit quiz');
         }
