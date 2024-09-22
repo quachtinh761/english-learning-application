@@ -11,6 +11,7 @@ use App\Models\Quiz;
 use App\Models\QuizSubmission;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class QuizService implements QuizServiceInterface
@@ -82,6 +83,7 @@ class QuizService implements QuizServiceInterface
                 ], $questions),
             ]);
         } catch (\Exception $e) {
+            Log::error('Failed to start quiz', ['quiz' => $quiz, 'exception' => $e]);
             throw new InternalServerErrorException('Failed to start quiz');
         }
 
@@ -98,19 +100,35 @@ class QuizService implements QuizServiceInterface
     /**
      * @inheritDoc
      */
-    public function submitQuiz(Quiz $quiz, string $submissionCode, array $answers): array
+    public function submitQuiz(Quiz $quiz, string $submissionCode, array $userSubmission): array
     {
         $submission = $this->validateSubmission(quiz: $quiz, submissionCode: $submissionCode);
-        $result = $this->mapAnswersAndCalculatePoints($submission->detail, $answers);
 
-        $submission->update([
-            'submitted_at' => now(),
+        try {
+            $result = $this->mapAnswersAndCalculatePoints($submission->detail, $userSubmission['answers']);
+
+            $submission->update([
+                'submitted_at' => now(),
+                'number_of_corrections' => $result['number_of_correct_answers'],
+                'total_points' => $result['total_points'],
+                'detail' => $result['detail'],
+                'user_email' => $userSubmission['user_email'] ?? '',
+                'user_name' => $userSubmission['user_name'] ?? '',
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to submit quiz', [
+                'quiz' => $quiz->id,
+                'submissionCode' => $submissionCode,
+                'userSubmission' => $userSubmission,
+                'exception' => $e->getTrace()
+            ]);
+            throw new InternalServerErrorException('Failed to submit quiz');
+        }
+
+        return [
             'number_of_corrections' => $result['number_of_correct_answers'],
             'total_points' => $result['total_points'],
-            'detail' => $result['detail'],
-        ]);
-
-        return [];
+        ];
     }
 
     /**
@@ -129,6 +147,7 @@ class QuizService implements QuizServiceInterface
             ->first();
 
         if (!$submission) {
+            Log::warning('Submission code not found for quiz', ['quiz_id' => $quiz->id, 'submissionCode' => $submissionCode]);
             throw new ModelNotFoundException('Submission', $submissionCode);
         }
 

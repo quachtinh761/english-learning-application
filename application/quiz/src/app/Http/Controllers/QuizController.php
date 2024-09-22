@@ -70,10 +70,10 @@ class QuizController extends Controller
         $result = $quizService->submitQuiz(
             quiz: $quiz,
             submissionCode: $request->validated()['submission_code'],
-            answers: $request->validated()['answers']
+            userSubmission: $request->validated()
         );
 
-        return response()->json($result);
+        return SuccessResponse::create(data: $result);
     }
 
     public function getTopRank(

@@ -7,7 +7,6 @@ use App\Http\Responses\InternalServerErrorResponse;
 use App\Http\Responses\InvalidInputResponse;
 use App\Http\Responses\NotFoundErrorResponse;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Mockery\Matcher\Not;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Throwable;
 

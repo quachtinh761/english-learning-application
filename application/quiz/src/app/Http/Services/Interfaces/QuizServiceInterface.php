@@ -37,12 +37,12 @@ interface QuizServiceInterface
      *
      * @param Quiz $quiz
      * @param string $submissionCode
-     * @param array $answers
+     * @param array $userSubmission - [['question_id' => 1, 'answer' => 'A'], ['question_id' => 2, 'answer' => 'B']]
      * @return array
      *
      * @throws InternalServerErrorException
      */
-    public function submitQuiz(Quiz $quiz, string $submissionCode, array $answers): array;
+    public function submitQuiz(Quiz $quiz, string $submissionCode, array $userSubmission): array;
 
     /**
      * Get top xx quiz submissions

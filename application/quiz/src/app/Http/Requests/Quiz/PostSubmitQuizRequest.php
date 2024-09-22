@@ -18,6 +18,8 @@ class PostSubmitQuizRequest extends FormRequest
             'answers' => ['required', 'array'],
             'answers.*.question_id' => ['required', 'integer'],
             'answers.*.answer' => ['required', 'string'],
+            'user_email' => ['required', 'email'],
+            'user_name' => ['required', 'string'],
         ];
     }
 }
