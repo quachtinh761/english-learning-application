@@ -228,7 +228,6 @@ Video
 
 ## Additional Notes
 ### Achievement
-
 - In this project until this time, I already provided a simple flow a quiz workflow, including realtime updating leader board.
 - The Architecture for larger scope was designed.
 - The tools & technologies were defined
@@ -256,11 +255,16 @@ Consider below points:
     + Need to get only non-draft quizzes
 - After the quiz ends, we need to update the ranks for all submissions.
 - Set up docker
+- In this phase, we only can get realtime if we do register subscribing topic from FE, which has not completed yet. In my local, I force subscribe the topic by calling `RealtimeNotification@subscribeToTopic` function with my local token.
 
 ## Conclusion
 In this submission, I already designed a general system for English Learning and create a demo for a small feature in that system, called Quiz Challenge.
 
 As designed in microservices system, this can be expanded and extended easily.
+
+For those who want to setup project locally, please reach out to [this document](./application/quiz/src/README.md) for setting up BE.
+
+For UI, can run directly `fe/index.html` file.
 
 For more detail or discussion, please feel free to reach out to me via email quachtinh761@gmail.com
 
