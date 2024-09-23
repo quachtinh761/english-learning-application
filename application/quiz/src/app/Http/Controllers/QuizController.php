@@ -84,6 +84,6 @@ class QuizController extends Controller
         $quiz = $quizService->getByCode($code);
         $result = $quizService->getTopSubmissions(quiz: $quiz, limit: 100);
 
-        return SuccessResponse::create(data: QuizSubmissionTransformer::transformItems($result));
+        return SuccessResponse::create(data: $result);
     }
 }

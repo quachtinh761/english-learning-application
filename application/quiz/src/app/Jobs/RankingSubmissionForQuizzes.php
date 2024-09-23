@@ -80,7 +80,7 @@ class RankingSubmissionForQuizzes implements ShouldQueue
     {
         try {
             $realtimeNotification->send(
-                'global',
+                'quiz-ranking',
                 'Quiz Rank Updated',
                 'Quiz rank has been updated',
                 [

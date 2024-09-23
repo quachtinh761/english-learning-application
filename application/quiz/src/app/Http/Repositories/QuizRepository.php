@@ -20,6 +20,10 @@ class QuizRepository extends BaseRepository
 
         $query->with(['quizQuestions']);
 
+        if (empty($filter['orderBy'])) {
+            $query->orderBy('created_at', 'desc');
+        }
+
         return $query->paginate($perPage, $select, 'page', $page);
     }
 }

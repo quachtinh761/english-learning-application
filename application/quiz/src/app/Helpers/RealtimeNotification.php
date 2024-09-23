@@ -33,4 +33,14 @@ class RealtimeNotification
 
         $messaging->send($message);
     }
+
+    public function subscribeToTopic(string $token, string $topic): void
+    {
+        $firebase = (new Factory)
+            ->withServiceAccount(base_path('credentials/firebase_credentials.json'));
+
+        $messaging = $firebase->createMessaging();
+
+        $messaging->subscribeToTopic($topic, [$token]);
+    }
 }
