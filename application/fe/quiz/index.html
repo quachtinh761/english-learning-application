@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Quizzes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .quiz-card {
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 text-center">List Quizzes</h1>
+        <div class="row">
+            <div class="col-md-12">
+                <form method="GET" action="" id="form-code-join">
+                    <div class="align-items-center">
+                        <div class="input-group">
+                            <label class="sr-only" for="code">Code</label>
+                            <input type="text" class="form-control mb-2" name="code" id="code" placeholder="Please enter code to flash join">
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-primary mb-2">Quick Join</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row quiz-container">
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./js/custom.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const apiUrl = 'http://localhost:8000/api/v1/quizzes';
+            $.ajax({
+                method: "GET",
+                url: `${apiUrl}?limit=100&page=1`,
+            })
+            .done(function(response) {
+                const quizzes = response.data;
+                const quizContainer = $('.quiz-container');
+
+                if (quizzes.length === 0) {
+                    quizContainer.append('<p class="text-center">There is no available Quiz now. Please get back later.</p>');
+                } else {
+                    quizzes.forEach(quiz => {
+                        const quizCard = `
+                            <div class="col-md-6 quiz-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${quiz.title}</h5>
+                                        <p class="card-text">${quiz.description}</p>
+                                        <a href="detail.html?code=${quiz.code}" class="btn btn-primary">Detail</a>
+                                    </div>
+                                </div>
+                            </div>`;
+                        quizContainer.append(quizCard);
+                    });
+                }
+            })
+            .fail(function() {
+                Swal.fire({
+                    title: "Error",
+                    text: "An error occurred. Please try again later.",
+                    icon: "error",
+                });
+            });
+
+            $("#form-code-join").on("submit", function( event ) {
+                event.preventDefault();
+                const code = $('#code').val();
+                if (!code.trim()) {
+                    Swal.fire({
+                        title: "Error",
+                        text: "Please enter code to join.",
+                        icon: "error",
+                    });
+                    return
+                }
+                $.ajax({
+                    method: "GET",
+                    url: `${apiUrl}/code/${code}`,
+                })
+                .done(function(response) {
+                    if (response.data) {
+                        const quizzes = response.data;
+                        window.location.href = `detail.html?code=${quizzes.code}`;
+                    }
+                })
+                .fail(function(response) {
+                    Swal.fire({
+                        title: "Error",
+                        text: response.responseJSON?.message ?? 'An error occurred. Please try again later.',
+                        icon: "error",
+                    });
+                });
+
+            });
+        });
+    </script>
+</body>
+</html>

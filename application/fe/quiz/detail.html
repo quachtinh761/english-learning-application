@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Quiz</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "",
+            authDomain: "",
+            projectId: "",
+            storageBucket: "",
+            messagingSenderId: "",
+            appId: "",
+            measurementId: "",
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log('Notification permission granted.');
+
+                messaging.getToken({ vapidKey: 'BIngUWPJWkoJ6OyyTeDjI3byrGlyEiq_GyRw-jVMu1mJnnk26HcPyGba7Sw7LrBaaKAbdUynu0VHFKxhys0QrME' })
+                    .then((currentToken) => {
+                        if (currentToken) {
+                            console.log('Token FCM:', currentToken);
+                        } else {
+                            console.log('No registration token available.');
+                        }
+                    })
+                    .catch((err) => {
+                        console.log('An error occurred while retrieving token. ', err);
+                    });
+            } else {
+                console.log('Unable to get permission to notify.');
+            }
+        });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/firebase-messaging-sw.js')
+                .then((registration) => {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                }).catch((err) => {
+                    console.log('Service Worker registration failed:', err);
+                });
+        }
+
+        messaging.onMessage((payload) => {
+            console.log('Message received. ', payload);
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 text-center">Quiz Detail</h1>
+        <div class="mt-4 info-quiz">
+        </div>
+        <div class="mt-5 text-center">
+            <h3>Top Rankings</h3>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7 mx-auto bg-white rounded shadow">
+                        <div class="table-responsive">
+                            <table class="table table-fixed">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" class="col-3">User name</th>
+                                        <th scope="col" class="col-3">Points</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-rank">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="./js/custom.js"></script>
+
+    <script>
+        const apiUrl = 'http://localhost:8000/api/v1/quizzes';
+        $(document).ready(function() {
+            const code = getUrlVars()["code"];
+            $.ajax({
+                method: "GET",
+                url: `${apiUrl}/code/${code}`,
+            })
+            .done(function(response) {
+                const quiz = response.data;
+                const quizContainer = $('.info-quiz');
+                const quizCard = `
+                    <h3 class="quiz-name">${quiz.title}</h3>
+                    <p class="quiz-description">${quiz.description}</p>
+                    <a href="index.html" class="btn btn-info">&#8656; Back</a>
+                    <a href="instruction.html?code=${quiz.code}" class="btn btn-success">Join now</a>
+                `;
+                quizContainer.html(quizCard);
+
+                getTopRank(quiz.code)
+            })
+            .fail(function(response) {
+                Swal.fire({
+                    title: "Error",
+                    text: response.responseJSON?.message ?? 'An error occurred while loading the quiz.',
+                    icon: "error",
+                });
+            });
+
+        });
+
+        function getTopRank(code){
+            $.ajax({
+                method: "GET",
+                url: `${apiUrl}/${code}/top`,
+            })
+            .done(function(response) {
+                const data = Object.entries(response.data);
+                if (data.length > 0) {
+                    $('#top-rank').html(`
+                        ${data.map(([key, value], index) => `
+                            <tr>
+                                <td class="col-3">${value.user_name}</td>
+                                <th scope="row" class="col-3">${value.total_points}</th>
+                            </tr>`)
+                        .join('')}
+                    `);
+                } else {
+                    $('#top-rank').html(`<tr><td colspan="2" class="text-center">No data. Let's be the first record here!</td></tr>`);
+                }
+            })
+            .fail(function(response) {
+                Swal.fire({
+                    title: "Error",
+                    text: response.responseJSON?.message ?? 'An error occurred while loading the top rank.',
+                    icon: "error",
+                });
+            });
+        }
+    </script>
+</body>
+</html>
