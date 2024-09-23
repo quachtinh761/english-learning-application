@@ -1,0 +1,212 @@
+{
+	"info": {
+		"_postman_id": "3b656f6f-3299-418f-aa7e-123635e1aa72",
+		"name": "English Learning",
+		"description": "This is the API collection for English Learning project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5044382"
+	},
+	"item": [
+		{
+			"name": "Submit A Quiz",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"submission_code\": \"66EFC00813308\",\n    \"answers\": [\n        {\"question_id\": 3, \"answer\": \"B\"},\n        {\"question_id\": 4, \"answer\": \"B\"},\n        {\"question_id\": 1, \"answer\": \"B\"}\n    ],\n    \"user_name\": \"Test\",\n    \"user_email\": \"test@gmail.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CLIENT_API_ENDPOINT}}/api/v1/quizzes/:quizCode/submit",
+					"host": [
+						"{{CLIENT_API_ENDPOINT}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"quizzes",
+						":quizCode",
+						"submit"
+					],
+					"variable": [
+						{
+							"key": "quizCode",
+							"value": "est-quas-et-culpa"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Start A Quiz (Generate Questions)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{CLIENT_API_ENDPOINT}}/api/v1/quizzes/:quizCode/start",
+					"host": [
+						"{{CLIENT_API_ENDPOINT}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"quizzes",
+						":quizCode",
+						"start"
+					],
+					"variable": [
+						{
+							"key": "quizCode",
+							"value": "123123"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get List Quizzes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{CLIENT_API_ENDPOINT}}/api/v1/quizzes?page=1&per_page=100",
+					"host": [
+						"{{CLIENT_API_ENDPOINT}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"quizzes"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "per_page",
+							"value": "100"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Quiz By Code",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{CLIENT_API_ENDPOINT}}/api/v1/quizzes/code/:quizCode",
+					"host": [
+						"{{CLIENT_API_ENDPOINT}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"quizzes",
+						"code",
+						":quizCode"
+					],
+					"variable": [
+						{
+							"key": "quizCode",
+							"value": "est-quas-et-culpa"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Quiz By ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{CLIENT_API_ENDPOINT}}/api/v1/quizzes/:quizId",
+					"host": [
+						"{{CLIENT_API_ENDPOINT}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"quizzes",
+						":quizId"
+					],
+					"variable": [
+						{
+							"key": "quizId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get TOP 100 Submissions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{CLIENT_API_ENDPOINT}}/api/v1/quizzes/:quizCode/top",
+					"host": [
+						"{{CLIENT_API_ENDPOINT}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"quizzes",
+						":quizCode",
+						"top"
+					],
+					"variable": [
+						{
+							"key": "quizCode",
+							"value": "est-quas-et-culpa"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "CLIENT_API_ENDPOINT",
+			"value": "localhost:8000",
+			"type": "string"
+		}
+	]
+}
