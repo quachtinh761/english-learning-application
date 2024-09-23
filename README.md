@@ -63,6 +63,7 @@ This board is updated constantly every time there is a new submission.
 - Cache: [AWS Elastic Cache - Redis](https://aws.amazon.com/elasticache)
 - Notification: [Firebase FCM](https://firebase.google.com/docs/cloud-messaging) - Or [AWS SNS](https://aws.amazon.com/sns/)
 - API doc: [OpenAPI - Swagger](https://swagger.io/specification/)
+- Security: meets The OWASP Top 10
 
 **Tools:**
 - [Sentry](https://sentry.io/) - Monitor log
@@ -253,6 +254,7 @@ Consider below points:
 - Quiz has status, but in this demo, I just list all quiz.
     + Need to allow more filter
     + Need to get only non-draft quizzes
+- Some submissions can be created but have not submitted yet
 - After the quiz ends, we need to update the ranks for all submissions.
 - Set up docker
 - In this phase, we only can get realtime if we do register subscribing topic from FE, which has not completed yet. In my local, I force subscribe the topic by calling `RealtimeNotification@subscribeToTopic` function with my local token.

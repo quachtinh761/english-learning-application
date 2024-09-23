@@ -56,3 +56,7 @@ ROOT
     ```
     The project then run at `locahost:8000`
 
+## Request Workflow
+
+This project is created based on "Repository Patter". Please refer to below image for further detail:
+![image](./../../../documentation/screenshots/request-flow.png)
