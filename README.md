@@ -180,7 +180,8 @@ Provide APIs:
 - Start the Quiz
 - Submit Quiz
 
-Add API doc for the APIS. See at [this link](./api-document/client/quiz.html) or [this Postman collection](./api-document/client/English%20Learning.postman_collection.json)
+Add API doc for the APIS. See at [this link](./api-document/client/quiz.html) or [this Postman collection](./api-document/client/English%20Learning.postman_collection.json), or can see how it looks like:
+![image](./documentation/screenshots/api-doc.png)
 
 To ensure the quality for code, I suggest follow the [Pyramid Testing Strategy](https://www.leapwork.com/blog/testing-pyramid)
 - Unit test
