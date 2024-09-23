@@ -22,12 +22,12 @@ class RealtimeNotification
 
         $messaging = $firebase->createMessaging();
 
-        $message = CloudMessage::fromArray([
+        $res = $message = CloudMessage::fromArray([
             'notification' => [
                 'title' => $title,
                 'body' => $body
             ],
-            'topic' => 'global',
+            'topic' => $topic,
             'data' => $additionalData
         ]);
 
@@ -41,6 +41,6 @@ class RealtimeNotification
 
         $messaging = $firebase->createMessaging();
 
-        $messaging->subscribeToTopic($topic, [$token]);
+        $res = $messaging->subscribeToTopic($topic, [$token]);
     }
 }

@@ -58,6 +58,21 @@
         }
 
         messaging.onMessage((payload) => {
+            console.log(payload.data, window.quizId);
+            if (payload.data?.quiz_id == window.quizId) {
+                const ranks = JSON.parse(payload.data.top_ranks ?? '[]');
+                if (ranks.length > 0) {
+                    $('#top-rank').html(`
+                        ${ranks.map((value) => `
+                            <tr>
+                                <td class="col-3">${value.user_name}</td>
+                                <th scope="row" class="col-3">${value.total_points}</th>
+                            </tr>`)
+                        .join('')}
+                    `);
+                }
+
+            }
             console.log('Message received. ', payload);
         });
     </script>
@@ -98,6 +113,7 @@
 
     <script>
         const apiUrl = 'http://localhost:8000/api/v1/quizzes';
+        window.quizId = 0;
         $(document).ready(function() {
             const code = getUrlVars()["code"];
             $.ajax({
@@ -114,8 +130,9 @@
                     <a href="instruction.html?code=${quiz.code}" class="btn btn-success">Join now</a>
                 `;
                 quizContainer.html(quizCard);
+                window.quizId = quiz.id;
 
-                getTopRank(quiz.code)
+                getTopRank(quiz.code);
             })
             .fail(function(response) {
                 Swal.fire({
